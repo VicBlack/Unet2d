@@ -1,6 +1,5 @@
 import sys
 sys.path.append('../')
-import numpy as np
 from data_construct import travel_files, data_set_split
 from data_generator import DataGenerator
 from unet2d_model import *
@@ -47,26 +46,33 @@ def main():
               'n_channels': 1,
               'shuffle': True}
 
-    netconf = {'pretrained_weights': None,
-               'input_size': (256, 256, 1),
-               'depth': 4,
-               'n_base_filters': 64,
-               'optimizer': Adam,
-               'activation': LeakyReLU,
-               'batch_normalization': True,
-               'initial_learning_rate': 5e-4,
-               'loss_function': dice_coefficient_loss}
+    net_conf = {'pretrained_weights': None,
+                'input_size': (256, 256, 1),
+                'depth': 4,
+                'n_base_filters': 64,
+                'optimizer': Adam,
+                'activation': LeakyReLU,
+                'batch_normalization': True,
+                'initial_learning_rate': 5e-4,
+                'loss_function': dice_coefficient_loss,
+                'multi_gpu_num': 0}
 
     training_generator = DataGenerator(partition['train'], **params)
     validation_generator = DataGenerator(partition['test'], **params)
 
     early_stoping = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, verbose=0, mode='auto')
-    model_checkpoint = ModelCheckpoint(filepath='train_result/weights/unet_bn_t_2d-{epoch:02d}-{val_acc:.5f}.hdf5', monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)
-    model_name = "unet_bn_t_2d-"+time.strftime("%Y%m%d-%H%M%S", time.localtime())
+    model_checkpoint = ModelCheckpoint(filepath='train_result/weights/unet_bn_t_2d-{epoch:02d}-{val_acc:.5f}.hdf5',
+                                       monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False,
+                                       mode='auto', period=1)
+    model_name = "unet_bn_t_2d-" + time.strftime("%Y%m%d-%H%M%S", time.localtime())
     tensorboard = TensorBoard(log_dir='logs/{}'.format(model_name))
-    model = unet_bn_t(**netconf)
-    # model.load_weights("unet_pre.hdf5")
-    results = model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=1, callbacks=[model_checkpoint, early_stoping, tensorboard])
+    # model = unet_bn_t(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam,
+    #                   activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4,
+    #                   loss_function=dice_coefficient_loss)
+    model = unet_bn_t(**net_conf)
+    # model.load_weights("train_result/weights/unet_bn_t_2d.hdf5")
+    results = model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=1,
+                                  callbacks=[model_checkpoint, early_stoping, tensorboard])
     print('Test_Accuracy: ', np.mean(results.history['val_acc']))
     plothistory(results)
 
