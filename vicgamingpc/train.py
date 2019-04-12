@@ -22,7 +22,7 @@ def plothistory(history):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Test'], loc='upper left')
-    fig_accuracy.savefig('result/Model accuracy.png')
+    fig_accuracy.savefig('train_result/Model accuracy.png')
 
     fig_loss = plt.figure()
     # 绘制训练 & 验证的损失值
@@ -32,7 +32,7 @@ def plothistory(history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Test'], loc='upper left')
-    fig_loss.savefig('result/Model loss.png')
+    fig_loss.savefig('train_result/Model loss.png')
 
 
 def main():
