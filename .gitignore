@@ -4,3 +4,6 @@
 .idea/Unet2d.iml
 .idea/vcs.xml
 .idea/workspace.xml
+vicpc/train_result/weights
+vicgamingpc/train_result/weights
+server/train_result/weights
