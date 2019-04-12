@@ -1,5 +1,6 @@
 
 .idea
+__pycache__
 vicpc/train_result/weights
 vicgamingpc/train_result/weights
 server/train_result/weights
