@@ -11,7 +11,7 @@ import time
 from keras.callbacks import TensorBoard
 import matplotlib.pyplot as plt
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1, 5, 6"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 def plothistory(history):
@@ -43,7 +43,7 @@ def main():
     partition = data_set_split(file_items)
 
     params = {'dim': (256, 256),
-              'batch_size': 42,
+              'batch_size': 12,
               'n_channels': 1,
               'shuffle': True}
 
@@ -56,7 +56,7 @@ def main():
                 'batch_normalization': True,
                 'initial_learning_rate': 5e-4,
                 'loss_function': dice_coefficient_loss,
-                'multi_gpu_num': 3}
+                'multi_gpu_num': 0}
 
     training_generator = DataGenerator(partition['train'], **params)
     validation_generator = DataGenerator(partition['test'], **params)
