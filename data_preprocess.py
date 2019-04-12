@@ -51,8 +51,8 @@ def img_norm(data):
     return data
 
 if __name__=='__main__':
-    file_path = 'E:/DATA/DCMS/dcm/DET0000101_SA2_ph5.dcm'
-    label_path = 'E:/DATA/DCMS/masks/DET0000101_SA2_ph5.png'
+    file_path = 'E:/WorkSpace/CAP/DCMS/dcm/DET0000101_SA2_ph5.dcm'
+    label_path = 'E:/WorkSpace/CAP/DCMS/masks/DET0000101_SA2_ph5.png'
     img = img_load(file_path, shape=(256, 256))
     lab = lab_load(label_path, shape=(256, 256))
     plt.figure()

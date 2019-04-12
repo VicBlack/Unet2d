@@ -1,9 +1,4 @@
-
-.idea/misc.xml
-.idea/modules.xml
-.idea/Unet2d.iml
-.idea/vcs.xml
-.idea/workspace.xml
+.idea
 vicpc/train_result/weights
 vicgamingpc/train_result/weights
 server/train_result/weights
