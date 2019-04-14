@@ -43,7 +43,7 @@ def main():
     partition = data_set_split(file_items)
 
     params = {'dim': (256, 256),
-              'batch_size': 12,
+              'batch_size': 16,
               'n_channels': 1,
               'shuffle': True}
 
