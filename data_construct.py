@@ -11,6 +11,14 @@ def travel_files(file_path):
     random.shuffle(file_items)
     return file_items
 
+def travel_testfiles(file_path):
+    file_items = []
+    for root, dirs, files in os.walk(file_path, topdown=True):
+        for name in files:
+            if name.find('SA') > 0 and name.find('dcm') > 0:
+                file_items.append(os.path.join(root, name))
+    random.shuffle(file_items)
+    return file_items
 
 def data_set_split(file_items):
     partition = {}
