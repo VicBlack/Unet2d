@@ -27,7 +27,7 @@ def saveResult(save_path, npyfile):
         io.imsave(os.path.join(save_path, "%d_predict.png"%i), img)
 
 
-def test(file_path, model_path, netconf, target_size=(256, 256), test_num=50, result_path='result/'):
+def test(file_path, model_path, netconf, target_size=(256, 256), test_num=50, result_path='test_result/'):
     if not os.path.exists(result_path):
         os.makedirs(result_path)
     test_generator = testGenerator(file_path, num_image=test_num, target_size=target_size, result_path=result_path)
@@ -47,13 +47,13 @@ if __name__ == '__main__':
                'batch_normalization': True,
                'initial_learning_rate': 5e-4,
                'loss_function': dice_coefficient_loss,
-               'multi_gpu_num': 3}
+               'multi_gpu_num': 0}
 
     test_conf = {'file_path': '/data/data/Validation/dcm/',
-                'model_path': 'train_result/weights/unet_bnt-16-1.00.hdf5',
+                'model_path': 'train_result/weights/unet_bn_t_2d-25-0.99848.hdf5',
                 'netconf': net_conf,
                 'target_size': (256, 256),
                 'test_num': 50,
                 'result_path': 'test_result/'}
 
-    test(file_path='/data/data/Validation/dcm/', model_path='train_result/unet_bnt-16-1.00.hdf5', netconf=net_conf, target_size=(256, 256), test_num=50, result_path='test_result/')
+    test(file_path='/data/data/Validation/dcm/', model_path='train_result/weights/unet_bn_t_2d-25-0.99848.hdf5', netconf=net_conf, target_size=(256, 256), test_num=50, result_path='test_result/')
