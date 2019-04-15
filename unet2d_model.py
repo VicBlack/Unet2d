@@ -1,3 +1,4 @@
+import keras
 from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
@@ -6,6 +7,25 @@ from keras.utils import multi_gpu_model
 
 K.set_image_data_format('channels_last')
 
+## intersection over union
+def IoU(y_true, y_pred, eps=1e-6):
+    if np.max(y_true) == 0.0:
+        return IoU(1-y_true, 1-y_pred) ## empty image; calc IoU of zeros
+    intersection = K.sum(y_true * y_pred, axis=[1,2,3])
+    union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3]) - intersection
+    return K.mean( (intersection + eps) / (union + eps), axis=0)
+
+def mean_iou(y_true, y_pred):
+    prec = []
+    for t in np.arange(0.5, 1.0, 0.05):
+        y_pred_ = tf.to_int32(y_pred > t)
+        score, up_opt = tf.metrics.mean_iou(y_true, y_pred_, 2)
+        K.get_session().run(tf.local_variables_initializer())
+        with tf.control_dependencies([up_opt]):
+            score = tf.identity(score)
+        prec.append(score)
+    return K.mean(K.stack(prec), axis=0)
+
 # ### Calculating metrics:
 def dice_coefficient(y_true, y_pred, smooth=1.):
     y_true_f = K.flatten(y_true)
@@ -13,9 +33,12 @@ def dice_coefficient(y_true, y_pred, smooth=1.):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-
 def dice_coefficient_loss(y_true, y_pred):
     return -dice_coefficient(y_true, y_pred)
+
+def bce_dice_loss(y_true, y_pred):
+    return 0.5 * keras.losses.binary_crossentropy(y_true, y_pred) - dice_coefficient(y_true, y_pred)
+
 
 
 def downsampling_block(input_tensor, filters, kernel_size=(3, 3), strides=(1, 1), padding='same', batch_normalization=False, activation=None):
@@ -73,7 +96,10 @@ def unet_bn_t(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base
     model = Model(inputs=inputs, outputs=outputs)
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
-    model.compile(optimizer=optimizer(lr=initial_learning_rate), loss=loss_function, metrics=['accuracy'])
+
+    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+                  loss=loss_function,
+                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
     model.summary()
 

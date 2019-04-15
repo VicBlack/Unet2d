@@ -22,7 +22,7 @@ def travel_testfiles(file_path):
 
 def data_set_split(file_items):
     partition = {}
-    holdout_percentage = 0.1
+    holdout_percentage = 0.15
     partition['holdout'] = file_items[0: int(len(file_items)*holdout_percentage)]
     train_list = file_items[int(len(file_items)*holdout_percentage): len(file_items)]
 
