@@ -11,7 +11,7 @@ from data_preprocess import img_load
 
 
 def testGenerator(test_path, num_image=50,target_size=(256,256), result_path='test/'):
-    filelist = os.listdir(test_path)
+    filelist = travel_files(test_path)
     files = random.sample(filelist, num_image)
     for i, item in enumerate(files):
         img_array = img_load(os.path.join(test_path, item), shape=target_size, norm=True)

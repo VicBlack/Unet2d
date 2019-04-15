@@ -7,11 +7,12 @@ import skimage.io as io
 from keras.optimizers import Adam
 from keras.layers import LeakyReLU
 from unet2d_model import *
+from data_construct import travel_files
 from data_preprocess import img_load
 
 
 def testGenerator(test_path, num_image=50, target_size=(256, 256), result_path='test_result/'):
-    filelist = os.listdir(test_path)
+    filelist = travel_files(test_path)
     files = random.sample(filelist, num_image)
     for i, item in enumerate(files):
         img_array = img_load(os.path.join(test_path, item), shape=target_size, norm=True)
