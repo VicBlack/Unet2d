@@ -50,7 +50,7 @@ if __name__ == '__main__':
                'loss_function': dice_coefficient_loss}
 
     test_conf = {'file_path': 'E:/DATA/Validation/dcm/',
-                'model_path': 'train_result/weights/unet_bnt-16-1.00.hdf5',
+                'model_path': 'train_result/weights/unet_bn_t_2d-30-0.99849.hdf5',
                 'netconf': net_conf,
                 'target_size': (256, 256),
                 'test_num': 50,
@@ -58,5 +58,5 @@ if __name__ == '__main__':
 
     # test(file_path='E:/DATA/Validation/dcm/', model_path='train_result/unet_bnt-16-1.00.hdf5', netconf=net_conf, target_size=(256, 256), test_num=50, result_path='test_result/')
     test(**test_conf)
-    test_generator = testGenerator(test_path='E:/DATA/Validation/dcm/')
+
 

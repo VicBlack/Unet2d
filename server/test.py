@@ -56,4 +56,4 @@ if __name__ == '__main__':
                 'test_num': 50,
                 'result_path': 'test_result/'}
 
-    test(file_path='/data/data/Validation/dcm/', model_path='train_result/weights/unet_bn_t_2d-25-0.99848.hdf5', netconf=net_conf, target_size=(256, 256), test_num=50, result_path='test_result/')
+    test(**test_conf)
