@@ -3,45 +3,16 @@ sys.path.append('../')
 from data_construct import travel_files, data_set_split
 from data_generator import *
 from unet2d_model import *
+from utils import *
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import Adam
 from keras.layers import LeakyReLU
 import os
-import shutil
 import time
 from keras.callbacks import TensorBoard
-import matplotlib.pyplot as plt
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import warnings
 warnings.filterwarnings('ignore')
-
-def plothistory(history):
-
-    fig_accuracy = plt.figure()
-    # 绘制训练 & 验证的准确率值
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.title('Model accuracy')
-    plt.ylabel('Accuracy')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
-    fig_accuracy.savefig('train_result/Model accuracy.png')
-
-    fig_loss = plt.figure()
-    # 绘制训练 & 验证的损失值
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('Model loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
-    fig_loss.savefig('train_result/Model loss.png')
-
-def saveResult(save_path, npyfile):
-    for i, item in enumerate(npyfile):
-        img = item[:, :, 0]
-        imgdata = img * 255
-        io.imsave(os.path.join(save_path, str(i) + "_predict.png"), imgdata.clip(0, 255, imgdata).astype(np.uint8))
 
 def main():
     file_path = 'E:/DATA/DCMS/'
@@ -99,7 +70,7 @@ def main():
     print(">> Testing dataset mIoU  = {:.2f}%".format(eva[3] * 100.0))
     print(">> Testing dataset mDice = {:.2f}%".format(eva[4] * 100.0))
     print('Test_Accuracy: ', np.mean(results.history['val_acc']))
-    plothistory(results)
+    plothistory(results, model_name)
 
 
 if __name__ == '__main__':
