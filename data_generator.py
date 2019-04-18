@@ -78,8 +78,8 @@ class DataGenerator(keras.utils.Sequence):
 #
 
 def predictGenerator(test_path, batch_size=2, percent=1, dim=(256, 256), n_channels=1, save_path='test_result/'):
-    if not os.path.exists(test_path):
-        os.makedirs(test_path)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     files = random.sample(test_path, int(np.ceil(len(test_path) * percent)))
     for i, item in enumerate(files):
         img_array = img_load(os.path.join(item[0]), shape=dim, norm=True)

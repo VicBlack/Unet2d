@@ -18,6 +18,7 @@ def main():
     # ## training configure
     file_path = 'E:/DATA/DCMS/'
     epochs = 3
+    chosen_file_percent = 1.0
     params = {'dim': (256, 256),
               'batch_size': 4,
               'n_channels': 1,
@@ -36,8 +37,8 @@ def main():
 
     net_conf = {'pretrained_weights': None,
                 'input_size': (256, 256, 1),
-                'depth': 4,
-                'n_base_filters': 64,
+                'depth': 2,
+                'n_base_filters': 16,
                 'optimizer': Adam,
                 'activation': LeakyReLU,
                 'batch_normalization': True,
@@ -47,7 +48,7 @@ def main():
 
     # ## configure dataset
     file_items = travel_files(file_path)
-    partition = data_set_split(file_items)
+    partition = data_set_split(file_items, chosen_file_percent)
     training_generator = DataGenerator(partition['train'], **params)
     validation_generator = DataGenerator(partition['validate'], **params)
     test_generator = DataGenerator(partition['test'], **test_params)
@@ -77,7 +78,7 @@ def main():
 
     # ## predict on test_dataset
     print('>> Start Predicting')
-    p_test = model.predict_generator(predicting_generator, steps=int(np.ceil(len(partition['holdout']) * predicting_params['percent'])), verbose=1)
+    p_test = model.predict_generator(predicting_generator, steps=int(np.ceil(len(partition['test']) * predicting_params['percent'])), verbose=1)
     saveResult(predicting_params['save_path'], p_test)
 
     # ## evaluate on test_dataset
