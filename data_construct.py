@@ -20,17 +20,19 @@ def travel_testfiles(file_path):
     random.shuffle(file_items)
     return file_items
 
-def data_set_split(file_items):
+def data_set_split(file_items, full_percentage=1.0, test_percentage = 0.15, train_percentage = 0.8):
     partition = {}
-    holdout_percentage = 0.15
-    partition['test'] = file_items[0: int(len(file_items)*holdout_percentage)]
-    train_list = file_items[int(len(file_items)*holdout_percentage): len(file_items)]
 
-    train_percentage = 0.8
+    chosen_file_items = file_items[0: int(len(file_items)*full_percentage)]
+
+    partition['test'] = chosen_file_items[0: int(len(chosen_file_items)*test_percentage)]
+    train_list = chosen_file_items[int(len(chosen_file_items)*test_percentage): len(chosen_file_items)]
+
+
     partition['train'] = train_list[0:int(len(train_list)*train_percentage)]
     partition['validate'] = train_list[int(len(train_list)*train_percentage): len(train_list)]
 
-    #print(partition)
+    # print(partition)
     return partition
 
 
@@ -38,7 +40,7 @@ def data_set_split(file_items):
 if __name__=='__main__':
     file_path = 'E:/DATA/DCMS/'
     file_items = travel_files(file_path)
-    data_set_split(file_items)
+    data_set_split(file_items, 0.2314, 0.2435, 0.5431)
 
 
 
