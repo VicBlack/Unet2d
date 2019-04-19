@@ -46,7 +46,9 @@ cudas = "0"
 # 'unet_bn_upsampling_2d'
 # 'unet_bn_deconv_2d'
 # 'unet_bn_full_upsampling_dp_2d'
-# 'unet_bn_deconv_dp_2d'
+# 'unet_bn_full_deconv_dp_2d'
+# 'unet_bn_deconv_upsampling_dp_2d'
+# 'unet_bn_upsampling_deconv_dp_2d'
 model_type = 'unet_bn_upsampling_2d'
 
 
