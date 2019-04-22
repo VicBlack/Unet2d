@@ -36,9 +36,9 @@ net_conf = {'pretrained_weights': None,
             'batch_normalization': True,
             'initial_learning_rate': 5e-4,
             'loss_function': dice_coefficient_loss,
-            'multi_gpu_num': 0}
+            'multi_gpu_num': 2}
 
-cudas = "0"
+cudas = "5,6"
 
 # ## configure net
 # ## available net below:
@@ -49,7 +49,7 @@ cudas = "0"
 # 'unet_bn_full_deconv_dp_2d'
 # 'unet_bn_deconv_upsampling_dp_2d'
 # 'unet_bn_upsampling_deconv_dp_2d'
-model_type = 'unet_bn_upsampling_2d'
+model_type = 'unet_bn_deconv_upsampling_dp_2d'
 
 
 def GetConfigure():
