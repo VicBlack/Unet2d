@@ -83,6 +83,41 @@ def deconvsampling_block_2d(input_tensor, skip_tensor, filters, kernel_size=(3, 
 
     return x  #返回第二次卷积的结果
 
+def dense_block_2d(input_tensor, base_filters=32, out_filters=64, block_depth=4, padding='same', activation=ReLU):
+    ''' Build a 2d dense_block where the output of each conv_block is fed to subsequent ones
+        Args:
+            input_tensor: input tensor of dense block.
+            base_filters: number of dense block input filters.
+            out_filters: number of dense block output filters.
+            block_depth: the depths of dense block, make (out_filters - base_filters) / block_depth is a integer.
+            padding: conv kernal paddings, default is same
+            activation: activation function, default is ReLU
+        Returns: keras tensor with out_filters
+    '''
+    # compute filters of 3x3 conv
+    _3x3_filter = int((out_filters - base_filters) / block_depth)
+
+    x = input_tensor
+    for i in range(block_depth):
+        # temptensor stores the layers which will be concatenate with the output of 3x3 conv
+        # x equals the layers which have been concatenated or the input layer
+        temptensor = x
+
+        # 1x1 conv + BN + ReLU
+        x = Conv2D(base_filters, kernel_size=(1, 1), strides=(1, 1), padding=padding)(x)
+        x = BatchNormalization()(x)
+        x = activation()(x)
+
+        # 3x3 conv + BN + ReLU
+        x = Conv2D(_3x3_filter, kernel_size=(3, 3), strides=(1, 1), padding=padding)(x)
+        x = BatchNormalization()(x)
+        x = activation()(x)
+
+        # concatenate the tenmtensor with x
+        x = Concatenate()([temptensor, x])
+
+    return x
+
 
 # ### Networks
 def unet_bn_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
@@ -406,6 +441,71 @@ def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_f
     conv10 = Conv2D(filters=1, kernel_size=(1, 1), strides=(1, 1), padding='same', activation='sigmoid')(conv9)
 
     model = Model(inputs=inputs, outputs=conv10)
+    if multi_gpu_num:
+        model = multi_gpu_model(model, gpus=multi_gpu_num)
+
+    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+                  loss=loss_function,
+                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+
+    model.summary()
+
+    if (pretrained_weights):
+        model.load_weights(pretrained_weights)
+
+    return model
+
+
+def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=32, optimizer=Adam, activation=ReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+    x = Input(input_size)
+    # 输入层
+    inputs = x
+    skiptensors = []  # 用于存放下采样中，每个深度后的tensor，以供之后Concatenate使用
+
+    # 输入层先进行3x3 conv + BN + ReLU
+    x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
+
+    # 连续depth次的Dense Block + Max Pooling，并存储每次Dense Block的结果用于之后Concatenate使用
+    for i in range(depth):
+        x = dense_block_2d(input_tensor=x, base_filters=n_base_filters, out_filters=2*n_base_filters)
+        skiptensors.append(x)
+        x = MaxPooling2D(pool_size=(2, 2))(x)
+        n_base_filters *= 2
+
+    # 最底层Dense Block卷积操作
+    # 此时n_base_filters=512,输出filters为1024
+    x = dense_block_2d(input_tensor=x, base_filters=n_base_filters, out_filters=2 * n_base_filters)
+
+    # depth次的上采样,采用stride为(2, 2)的反卷积+BN+ReLU,随后与下采样过程的tensor进行Concatenate,并经过1x1 conv+BN+ReLU后，继续Dense Block
+    # i从depth-1到0
+    for i in reversed(range(depth)):  # 下采样过程中，深度从深到浅
+        # 首先进行stride为(2, 2)的反卷积+BN+ReLU
+        x = Conv2DTranspose(n_base_filters, kernel_size=(2, 2), strides=(2, 2))(x)  #采用反卷积替代上采样
+        x = BatchNormalization()(x)
+        x = activation()(x)
+
+        # 其次进行Concatenate
+        x = Concatenate()([skiptensors[i], x])  # 特征级联,i从depth-1到0
+
+        # 随后1x1 conv + BN + ReLU
+        n_base_filters //= 2  # 每个深度往上。特征减少一倍
+        x = Conv2D(filters=n_base_filters, kernel_size=(1, 1), strides=(1, 1), padding='same')(x)
+        x = BatchNormalization()(x)
+        x = activation()(x)
+
+
+        # 送入Dense Block
+        if i == 0:
+            # i=0即最上方一层时，Dense Block的输入为16，此时n_base_filters为32，需要干预处理
+            x = dense_block_2d(input_tensor=x, base_filters=n_base_filters//2, out_filters=2*n_base_filters)
+        else:
+            x = dense_block_2d(input_tensor=x, base_filters=n_base_filters, out_filters=2 * n_base_filters)
+
+    # 1x1 conv
+    x = Conv2D(filters=1, kernel_size=(1, 1), strides=(1, 1), padding='same')(x)
+    outputs = Add()([inputs, x])
+
+    model = Model(inputs=inputs, outputs=outputs)
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
