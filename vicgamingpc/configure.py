@@ -12,7 +12,7 @@ file_path = 'E:/WorkSpace/CAP/DCMS/'
 epochs = 50
 chosen_file_percent = 1.0
 params = {'dim': (256, 256),
-          'batch_size': 8,
+          'batch_size': 4,
           'n_channels': 1,
           'shuffle': True}
 
@@ -49,7 +49,7 @@ cudas = "0"
 # 'unet_bn_full_deconv_dp_2d'
 # 'unet_bn_deconv_upsampling_dp_2d'
 # 'unet_bn_upsampling_deconv_dp_2d'
-model_type = 'unet_bn_upsampling_2d'
+model_type = 'unet_bn_full_upsampling_dp_2d'
 
 
 def GetConfigure():
