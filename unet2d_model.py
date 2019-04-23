@@ -464,6 +464,8 @@ def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_
 
     # 输入层先进行3x3 conv + BN + ReLU
     x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
+    x = BatchNormalization()(x)
+    x = activation()(x)
 
     # 连续depth次的Dense Block + Max Pooling，并存储每次Dense Block的结果用于之后Concatenate使用
     for i in range(depth):
@@ -526,7 +528,7 @@ def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
         net_conf = {'pretrained_weights': None,
                     'input_size': (256, 256, 1),
                     'depth': 4,
-                    'n_base_filters': 64,
+                    'n_base_filters': 32,
                     'optimizer': Adam,
                     'activation': LeakyReLU,
                     'batch_normalization': True,
@@ -547,6 +549,8 @@ def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
         return unet_bn_deconv_upsampling_dp_2d(**net_conf)
     if model_type == 'unet_bn_upsampling_deconv_dp_2d':
         return unet_bn_upsampling_deconv_dp_2d(**net_conf)
+    if model_type == 'unet_dense_2d':
+        return unet_dense_2d(**net_conf)
 
 if __name__=='__main__':
     # unet_2d = GetNet('unet_2d')
@@ -555,6 +559,6 @@ if __name__=='__main__':
     # unet_bn_full_upsampling_dp_2d = GetNet('unet_bn_full_upsampling_dp_2d')
     # unet_bn_full_deconv_dp_2d = GetNet('unet_bn_full_deconv_dp_2d')
     # unet_bn_deconv_upsampling_dp_2d = GetNet('unet_bn_deconv_upsampling_dp_2d')
-    unet_bn_upsampling_deconv_dp_2d = GetNet('unet_bn_upsampling_deconv_dp_2d')
-
+    # unet_bn_upsampling_deconv_dp_2d = GetNet('unet_bn_upsampling_deconv_dp_2d')
+    unet_dense_2d = GetNet('unet_dense_2d')
 
