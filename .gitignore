@@ -1,8 +1,11 @@
 .idea
 __pycache__
 vicpc/train_result/weights/
+vicpc/configure.py
 vicpc/__pycache__
 vicgamingpc/train_result/weights/
+vicgamingpc/configure.py
 vicgamingpc/__pycache__
 server/train_result/weights/
+server/configure.py
 server/__pycache__
