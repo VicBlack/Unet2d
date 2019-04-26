@@ -21,7 +21,7 @@ def main():
     # ## load configure
     file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type = GetConfigure()
     os.environ["CUDA_VISIBLE_DEVICES"] = cudas
-    model_name = model_type + '-' + time.strftime("%Y%m%d-%H%M%S", time.localtime())
+    model_name = model_type + '_bs_' + str(params['batch_size']) + '-' + time.strftime("%Y%m%d-%H%M%S", time.localtime())
     conf_path = 'train_result/configures/{}'.format(model_name)
     if not os.path.exists(conf_path):
         os.makedirs(conf_path)
@@ -42,7 +42,8 @@ def main():
     training_generator = DataGenerator(partition['train'], **params)
     validation_generator = DataGenerator(partition['validate'], **params)
     test_generator = DataGenerator(partition['test'], **params, shuffle=False)
-    predicting_generator = predictGenerator(partition['test'], **params, percent=predict_percent, save_path=test_result_path)
+    predicting_generator = predictGenerator(partition['test'], **params,
+                                            percent=predict_percent, save_path=test_result_path)
 
     model = GetNet(model_type, net_conf)
     early_stoping = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, verbose=0, mode='auto')
