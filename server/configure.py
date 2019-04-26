@@ -11,21 +11,10 @@ from keras.layers import LeakyReLU
 file_path = '/data/data/DCMS/'
 epochs = 50
 chosen_file_percent = 1.0
+predict_percent = 0.1
 params = {'dim': (256, 256),
           'batch_size': 12,
-          'n_channels': 1,
-          'shuffle': True}
-
-test_params = {'dim': params['dim'],
-               'batch_size': params['batch_size'],
-               'n_channels': params['n_channels'],
-               'shuffle': False}
-
-predicting_params = {'dim': params['dim'],
-                     'percent': 0.01,
-                     'batch_size': params['batch_size'],
-                     'n_channels': params['n_channels'],
-                     'save_path': 'test_result/'}
+          'n_channels': 1}
 
 net_conf = {'pretrained_weights': None,
             'input_size': (256, 256, 1),
@@ -49,8 +38,10 @@ cudas = "5,6"
 # 'unet_bn_full_deconv_dp_2d'
 # 'unet_bn_deconv_upsampling_dp_2d'
 # 'unet_bn_upsampling_deconv_dp_2d'
+# 'unet_dense_2d'
+# 'unet_bn_block_full_upsampling_dp_2d'
 model_type = 'unet_bn_deconv_upsampling_dp_2d'
 
 
 def GetConfigure():
-    return file_path, epochs, chosen_file_percent, params, test_params, predicting_params, net_conf, cudas, model_type
+    return file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type

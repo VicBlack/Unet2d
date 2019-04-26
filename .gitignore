@@ -1,6 +1,8 @@
-
 .idea
 __pycache__
-vicpc/train_result/weights/*.hdf5
-vicgamingpc/train_result/weights/*.hdf5
-server/train_result/weights/*.hdf5
+vicpc/train_result/weights/
+vicpc/__pycache__
+vicgamingpc/train_result/weights/
+vicgamingpc/__pycache__
+server/train_result/weights/
+server/__pycache__

@@ -612,12 +612,14 @@ def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
         return unet_bn_block_full_upsampling_dp_2d(**net_conf)
 
 if __name__=='__main__':
-    # unet_2d = GetNet('unet_2d')
-    # unet_bn_upsampling_2d = GetNet('unet_bn_upsampling_2d')
-    # unet_bn_deconv_2d = GetNet('unet_bn_deconv_2d')
-    # unet_bn_full_upsampling_dp_2d = GetNet('unet_bn_full_upsampling_dp_2d')
-    # unet_bn_full_deconv_dp_2d = GetNet('unet_bn_full_deconv_dp_2d')
-    # unet_bn_deconv_upsampling_dp_2d = GetNet('unet_bn_deconv_upsampling_dp_2d')
-    # unet_bn_upsampling_deconv_dp_2d = GetNet('unet_bn_upsampling_deconv_dp_2d')
-    # unet_dense_2d = GetNet('unet_dense_2d')
-    unet_bn_block_full_upsampling_dp_2d = GetNet('unet_bn_block_full_upsampling_dp_2d')
+    # model = GetNet('unet_2d')
+    # model = GetNet('unet_bn_upsampling_2d')
+    # model = GetNet('unet_bn_deconv_2d')
+    # model = GetNet('unet_bn_full_upsampling_dp_2d')
+    # model = GetNet('unet_bn_full_deconv_dp_2d')
+    # model = GetNet('unet_bn_deconv_upsampling_dp_2d')
+    # model = GetNet('unet_bn_upsampling_deconv_dp_2d')
+    # model = GetNet('unet_dense_2d')
+    model = GetNet('unet_bn_full_deconv_dp_2d')
+
+

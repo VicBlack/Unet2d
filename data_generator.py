@@ -82,10 +82,14 @@ def predictGenerator(test_path, batch_size=2, percent=1, dim=(256, 256), n_chann
         os.makedirs(save_path)
     files = random.sample(test_path, int(np.ceil(len(test_path) * percent)))
     for i, item in enumerate(files):
-        img_array = img_load(os.path.join(item[0]), shape=dim, norm=True)
-        save_name = str(i) + "_source_" + os.path.splitext(os.path.split(item[0])[1])[0] + '.png'
+        img_array = img_load(item[0], shape=dim, norm=True)
+        lab_array = lab_load(item[1], shape=dim, norm=False, binary=True)
+        img_save_name = str(i) + "_source_img_" + os.path.splitext(os.path.split(item[0])[1])[0] + '.png'
+        lab_save_name = str(i) + "_source_label_" + os.path.split(item[1])[1]
         imgdata = img_array * 255
-        io.imsave(os.path.join(save_path, save_name), imgdata.clip(0, 255, imgdata).astype(np.uint8))
+        labdata = lab_array * 255
+        io.imsave(os.path.join(save_path, img_save_name), imgdata.clip(0, 255, imgdata).astype(np.uint8))
+        io.imsave(os.path.join(save_path, lab_save_name), labdata.clip(0, 255, labdata).astype(np.uint8))
         img_array = np.reshape(img_array, img_array.shape + (1,))
         img_array = np.reshape(img_array, (1,) + img_array.shape)
         yield img_array
