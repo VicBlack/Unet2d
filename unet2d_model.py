@@ -130,7 +130,7 @@ def block_2d(input_tensor, filters, numbersize, kernel_size=(3, 3), strides=(1, 
 
 
 # ### Networks
-def unet_bn_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -168,7 +168,7 @@ def unet_bn_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256,
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -179,7 +179,7 @@ def unet_bn_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256,
 
     return model
 
-def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -215,7 +215,7 @@ def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -226,7 +226,7 @@ def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256
 
     return model
 
-def unet_bn_full_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_full_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -264,7 +264,7 @@ def unet_bn_full_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1),
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -275,7 +275,7 @@ def unet_bn_full_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1),
 
     return model
 
-def unet_bn_deconv_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_deconv_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -313,7 +313,7 @@ def unet_bn_deconv_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 25
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -324,7 +324,7 @@ def unet_bn_deconv_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 25
 
     return model
 
-def unet_bn_upsampling_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_upsampling_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -362,7 +362,7 @@ def unet_bn_upsampling_deconv_dp_2d(pretrained_weights=None, input_size=(256, 25
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -373,7 +373,7 @@ def unet_bn_upsampling_deconv_dp_2d(pretrained_weights=None, input_size=(256, 25
 
     return model
 
-def unet_bn_upsampling_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_upsampling_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -401,7 +401,7 @@ def unet_bn_upsampling_2d(pretrained_weights=None, input_size=(256, 256, 1), dep
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -412,7 +412,7 @@ def unet_bn_upsampling_2d(pretrained_weights=None, input_size=(256, 256, 1), dep
 
     return model
 
-def unet_bn_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_bn_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -440,7 +440,7 @@ def unet_bn_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -451,7 +451,7 @@ def unet_bn_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4
 
     return model
 
-def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam, activation=LeakyReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     inputs = Input(input_size)
     conv1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
     conv1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1)
@@ -501,7 +501,7 @@ def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_f
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -513,7 +513,7 @@ def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_f
     return model
 
 
-def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=32, optimizer=Adam, activation=ReLU, batch_normalization=True, initial_learning_rate=5e-4, loss_function=dice_coefficient_loss, multi_gpu_num=0):
+def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=32, optimizer=Adam(lr=5e-4), activation=ReLU, batch_normalization=True, loss_function=dice_coefficient_loss, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
     inputs = x
@@ -568,7 +568,7 @@ def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_
     if multi_gpu_num:
         model = multi_gpu_model(model, gpus=multi_gpu_num)
 
-    model.compile(optimizer=optimizer(lr=initial_learning_rate),
+    model.compile(optimizer=optimizer,
                   loss=loss_function,
                   metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
 
@@ -586,10 +586,9 @@ def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
                     'input_size': (256, 256, 1),
                     'depth': 4,
                     'n_base_filters': 32,
-                    'optimizer': Adam,
+                    'optimizer': Adam(lr=5e-4),
                     'activation': LeakyReLU,
                     'batch_normalization': True,
-                    'initial_learning_rate': 5e-4,
                     'loss_function': dice_coefficient_loss,
                     'multi_gpu_num': 0}
     if model_type == 'unet_2d':
@@ -620,6 +619,6 @@ if __name__=='__main__':
     # model = GetNet('unet_bn_deconv_upsampling_dp_2d')
     # model = GetNet('unet_bn_upsampling_deconv_dp_2d')
     # model = GetNet('unet_dense_2d')
-    model = GetNet('unet_bn_full_deconv_dp_2d')
+    model = GetNet('unet_bn_full_upsampling_dp_2d')
 
 
