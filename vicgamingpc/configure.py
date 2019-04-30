@@ -4,8 +4,8 @@ from data_construct import travel_files, data_set_split
 from data_generator import *
 from unet2d_model import *
 from utils import *
-from keras.optimizers import Adam
-from keras.layers import LeakyReLU
+from keras.optimizers import *
+from keras.layers import *
 
 # ## training configure
 file_path = 'E:/WorkSpace/CAP/DCMS/'
@@ -20,10 +20,9 @@ net_conf = {'pretrained_weights': None,
             'input_size': (256, 256, 1),
             'depth': 4,
             'n_base_filters': 64,
-            'optimizer': Adam,
+            'optimizer': Adam(lr=5e-4),
             'activation': LeakyReLU,
             'batch_normalization': True,
-            'initial_learning_rate': 5e-4,
             'loss_function': dice_coefficient_loss,
             'multi_gpu_num': 0}
 

@@ -62,7 +62,7 @@ def main():
     print('>> Start Training')
     results = model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=epochs,
                                   callbacks=[model_checkpoint, early_stoping, tensorboard])
-
+    print('Validation_Accuracy: ', np.mean(results.history['val_acc']))
     # ## predict on test_dataset
     print('>> Start Predicting')
     p_test = model.predict_generator(predicting_generator, steps=int(np.ceil(len(partition['test']) * predict_percent)), verbose=1)
@@ -71,19 +71,13 @@ def main():
     # ## evaluate on test_dataset
     print('>> Start Evaluating')
     eva = model.evaluate_generator(test_generator, verbose=1)
-    print(">> Testing dataset accuracy = {:.3f}%".format(eva[1] * 100.0))
-    print(">> Testing dataset binary_crossentropy = {:.3f}".format(eva[2] * 1.0))
-    print(">> Testing dataset mIoU  = {:.3f}%".format(eva[3] * 100.0))
-    print(">> Testing dataset mDice = {:.3f}%".format(eva[4] * 100.0))
+    metricsnames = model.metrics_names
+    for i in range(len(metricsnames)):
+        print(">> Testing dataset " + metricsnames[i] + " = {:.8f}".format(eva[i]))
     print('>> Run Model Completed !')
-    print('Validation_Accuracy: ', np.mean(results.history['val_acc']))
 
     # ## save figures
-    plothistory(results, figure_path, 'acc')
-    plothistory(results, figure_path, 'loss')
-    plothistory(results, figure_path, 'binary_crossentropy')
-    plothistory(results, figure_path, 'IoU')
-    plothistory(results, figure_path, 'dice_coefficient')
+    plothistory(results, figure_path, metricsnames)
     plot_acc_loss(results, figure_path)
 
 

@@ -5,17 +5,18 @@ import numpy as np
 import sys
 
 
-def plothistory(history, figure_path, type):
-    fig = plt.figure()
+def plothistory(history, figure_path, metricsnames):
     # 绘制训练 & 验证的准确率值
-    plt.plot(history.history[type], label='train ' + type)
-    plt.plot(history.history['val_' + type], label='val acc ' + type)
-    plt.title('Model ' + type)
-    plt.ylabel(type)
-    plt.xlabel('Epoch')
-    plt.grid(True)
-    plt.legend(loc='upper left')
-    fig.savefig(os.path.join(figure_path, type + '.png'), dpi=300)
+    for metrictype in metricsnames:
+        fig = plt.figure()
+        plt.plot(history.history[metrictype], label='train ' + metrictype)
+        plt.plot(history.history['val_' + metrictype], label='val ' + metrictype)
+        plt.title('Model ' + metrictype)
+        plt.ylabel(metrictype)
+        plt.xlabel('Epoch')
+        plt.grid(True)
+        plt.legend(loc='upper left')
+        fig.savefig(os.path.join(figure_path, metrictype + '.png'), dpi=300)
 
 
 def plot_acc_loss(history, figure_path):
@@ -44,7 +45,7 @@ def saveResult(save_path, npyfile):
 
 
 class Logger(object):
-    def __init__(self, filename='default.log', stream=sys.stdout):
+    def __init__(self, filename='train.log', stream=sys.stdout):
         self.terminal = stream
         self.log = open(filename, 'a')
 

@@ -23,7 +23,6 @@ net_conf = {'pretrained_weights': None,
             'optimizer': SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True),
             'activation': PReLU,
             'batch_normalization': True,
-            'initial_learning_rate': 5e-4,
             'loss_function': dice_coefficient_loss,
             'multi_gpu_num': 0}
 
