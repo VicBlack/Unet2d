@@ -2,7 +2,10 @@
 __pycache__
 vicpc/train_result/weights/
 vicpc/__pycache__
+vicpc/test_result
 vicgamingpc/train_result/weights/
 vicgamingpc/__pycache__
+vicgamingpc/test_result
 server/train_result/weights/
 server/__pycache__
+server/test_result
