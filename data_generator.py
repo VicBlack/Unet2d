@@ -4,6 +4,7 @@ import skimage.io as io
 import os
 import random
 from data_preprocess import img_load, lab_load, img_crop, img_norm
+from keras.preprocessing.image import *
 
 class DataGenerator(keras.utils.Sequence):
     def __init__(self, list_IDs, batch_size=2, dim=(256, 256), n_channels=1, shuffle=True):
@@ -13,6 +14,16 @@ class DataGenerator(keras.utils.Sequence):
         self.n_channels = n_channels
         self.shuffle = shuffle
         self.on_epoch_end()
+        self.datagen = ImageDataGenerator(
+            rotation_range=10,
+            width_shift_range=0.05,
+            height_shift_range=0.05,
+            shear_range=0.05,
+            zoom_range=0.05,
+            fill_mode='nearest',
+            horizontal_flip=True,
+            vertical_flip=True,
+            dtype=np.float64)
 
     def on_epoch_end(self):
         ## 构造一个[0,....,sampls]得列表
@@ -41,6 +52,9 @@ class DataGenerator(keras.utils.Sequence):
             lab_array = lab_load(item[1], shape=(256, 256), norm=False, binary=True)
             img_array = img_array.reshape(*img_array.shape, self.n_channels)
             lab_array = lab_array.reshape(*lab_array.shape, self.n_channels)
+            seed = random.randint(1, 10000)
+            img_array = self.datagen.random_transform(img_array, seed)
+            lab_array = self.datagen.random_transform(lab_array, seed)
             # print('each_img_shape', img_array.shape)
             # print('each_lab_shape', lab_array.shape)
             X[i,] = img_array
