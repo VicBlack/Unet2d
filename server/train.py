@@ -19,7 +19,7 @@ warnings.filterwarnings('ignore')
 
 def main():
     # ## load configure
-    file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type = GetConfigure()
+    file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type, datagen = GetConfigure()
     os.environ["CUDA_VISIBLE_DEVICES"] = cudas
     model_name = model_type + '_B' + str(params['batch_size']) + '_' + str(type(net_conf['optimizer'])).split('\'')[1].split('.')[-1] + '_'\
                  + str(net_conf['activation']).split('\'')[1].split('.')[-1] + '-' + time.strftime("%Y%m%d-%H%M%S", time.localtime())
@@ -40,8 +40,8 @@ def main():
     # ## configure dataset
     file_items = travel_files(file_path)
     partition = data_set_split(file_items, chosen_file_percent)
-    training_generator = DataGenerator(partition['train'], **params)
-    validation_generator = DataGenerator(partition['validate'], **params)
+    training_generator = DataGenerator(partition['train'], **params, datagen=datagen)
+    validation_generator = DataGenerator(partition['validate'], **params, datagen=datagen)
     test_generator = DataGenerator(partition['test'], **params, shuffle=False)
     predicting_generator = predictGenerator(partition['test'], **params,
                                             percent=predict_percent, save_path=test_result_path)

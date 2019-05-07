@@ -6,6 +6,7 @@ from unet2d_model import *
 from utils import *
 from keras.optimizers import *
 from keras.layers import *
+from keras.preprocessing.image import *
 
 # ## training configure
 file_path = '/data/data/DCMS/'
@@ -28,6 +29,17 @@ net_conf = {'pretrained_weights': None,
 
 cudas = "1, 3"
 
+datagen = ImageDataGenerator(
+    rotation_range=10,
+    width_shift_range=0.05,
+    height_shift_range=0.05,
+    shear_range=0.05,
+    zoom_range=0.05,
+    fill_mode='nearest',
+    horizontal_flip=True,
+    vertical_flip=True,
+    dtype=np.float64)
+
 # ## configure net
 # ## available net below:
 # 'unet_2d'
@@ -43,4 +55,4 @@ model_type = 'unet_bn_upsampling_2d'
 
 
 def GetConfigure():
-    return file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type
+    return file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type, datagen
