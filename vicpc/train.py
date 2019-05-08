@@ -22,7 +22,9 @@ def main():
     file_path, epochs, chosen_file_percent, predict_percent, params, net_conf, cudas, model_type, datagen = GetConfigure()
     os.environ["CUDA_VISIBLE_DEVICES"] = cudas
     model_name = model_type + '_B' + str(params['batch_size']) + '_' + str(type(net_conf['optimizer'])).split('\'')[1].split('.')[-1] + '_'\
-                 + str(net_conf['activation']).split('\'')[1].split('.')[-1] + '-' + time.strftime("%Y%m%d-%H%M%S", time.localtime())
+                 + str(net_conf['activation']).split('\'')[1].split('.')[-1]
+    model_name = model_name + '_drop' + str(net_conf['dropout']) if net_conf['dropout'] else model_name
+    model_name += '-' + time.strftime("%Y%m%d-%H%M%S", time.localtime())
     conf_path = 'train_result/configures/{}'.format(model_name)
     if not os.path.exists(conf_path):
         os.makedirs(conf_path)
