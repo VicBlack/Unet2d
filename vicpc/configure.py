@@ -25,6 +25,7 @@ net_conf = {'pretrained_weights': None,
             'activation': PReLU,
             'batch_normalization': True,
             'loss_function': dice_coefficient_loss,
+            'dropout': 0.3,
             'multi_gpu_num': 0}
 
 cudas = "0"
@@ -51,7 +52,7 @@ datagen = ImageDataGenerator(
 # 'unet_bn_upsampling_deconv_dp_2d'
 # 'unet_dense_2d'
 # 'unet_bn_block_full_upsampling_dp_2d'
-model_type = 'unet_bn_full_upsampling_dp_2d'
+model_type = 'unet_bn_upsampling_2d'
 
 
 def GetConfigure():

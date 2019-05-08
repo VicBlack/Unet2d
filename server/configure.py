@@ -25,6 +25,7 @@ net_conf = {'pretrained_weights': None,
             'activation': LeakyReLU,
             'batch_normalization': True,
             'loss_function': dice_coefficient_loss,
+            'dropout': 0.3,
             'multi_gpu_num': 2}
 
 cudas = "1, 3"
