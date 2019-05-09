@@ -193,7 +193,7 @@ def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256
         x = MaxPooling2D(pool_size=(2, 2))(x)
         n_base_filters *= 2
     # 最底层两次卷积操作
-    x = Dropout(0.5)(x)
+    x = Dropout(0.5)(x) if dropout else x
     x = block_2d(x, n_base_filters, numbersize=depth-1, batch_normalization=batch_normalization, activation=activation)
     dplayer=None
 
@@ -439,7 +439,7 @@ def unet_bn_upsampling_2d(pretrained_weights=None, input_size=(256, 256, 1), dep
     x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
     x = BatchNormalization()(x) if batch_normalization else x
     x = activation()(x) if activation else Activation('relu')(x)
-    x = Dropout(dropout)(x)
+    x = Dropout(dropout)(x) if dropout else x
     x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
     x = BatchNormalization()(x) if batch_normalization else x
     x = activation()(x) if activation else Activation('relu')(x)
