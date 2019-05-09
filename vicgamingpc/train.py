@@ -24,6 +24,7 @@ def main():
     model_name = model_type + '_B' + str(params['batch_size']) + '_' + str(type(net_conf['optimizer'])).split('\'')[1].split('.')[-1] + '_'\
                  + str(net_conf['activation']).split('\'')[1].split('.')[-1]
     model_name = model_name + '_drop' + str(net_conf['dropout']) if net_conf['dropout'] else model_name
+    model_name = model_name + '_da' if datagen else model_name
     model_name += '-' + time.strftime("%Y%m%d-%H%M%S", time.localtime())
     conf_path = 'train_result/configures/{}'.format(model_name)
     if not os.path.exists(conf_path):

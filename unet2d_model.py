@@ -228,6 +228,57 @@ def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256
 
     return model
 
+def unet_bn_full_upsampling_dp3_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, dropout=None, multi_gpu_num=0):
+    x = Input(input_size)
+    # 输入层
+    inputs = x
+    skiptensors = []  # 用于存放下采样中，每个深度后的tensor，以供之后级联使用
+    upsamplingtensors = []  # 用于存放上采样中，第二次卷积的结果，以供之后deep supervision使用
+    for i in range(depth):
+        x, x0 = downsampling_block_2d(x, n_base_filters, batch_normalization=batch_normalization, activation=activation,
+                                      dropout=dropout)
+        skiptensors.append(x0)
+        n_base_filters *= 2
+    # 最底层两次卷积操作
+    x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
+    x = BatchNormalization()(x) if batch_normalization else x
+    x = activation()(x) if activation else Activation('relu')(x)
+    x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
+    x = BatchNormalization()(x) if batch_normalization else x
+    x = activation()(x) if activation else Activation('relu')(x)
+    dplayer = None
+
+    for i in reversed(range(depth)):  # 下采样过程中，深度从深到浅
+        n_base_filters //= 2  # 每个深度往上。特征减少一倍
+        x = upsampling_block_2d(x, skiptensors[i], n_base_filters, batch_normalization=batch_normalization,
+                                activation=activation)
+        upsamplingtensors.append(x)
+        if i == depth - 1:
+            dplayer = upsamplingtensors[depth - i - 1]
+        else:
+            dplayer = UpSampling2D(size=(2, 2))(dplayer)  # 采用上采样
+            dplayer = Concatenate()([upsamplingtensors[depth - i - 1], dplayer])  # 特征级联
+
+    # x = Concatenate()([x, dplayer])
+    x = dplayer
+    # 输出层
+    outputs = Conv2D(filters=1, kernel_size=(1, 1), strides=(1, 1), padding='same', activation='sigmoid')(x)
+
+    model = Model(inputs=inputs, outputs=outputs)
+    if multi_gpu_num:
+        model = multi_gpu_model(model, gpus=multi_gpu_num)
+
+    model.compile(optimizer=optimizer,
+                  loss=loss_function,
+                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+
+    model.summary()
+
+    if (pretrained_weights):
+        model.load_weights(pretrained_weights)
+
+    return model
+
 def unet_bn_full_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_filters=64, optimizer=Adam(lr=5e-4), activation=LeakyReLU, batch_normalization=True, loss_function=dice_coefficient_loss, dropout=None, multi_gpu_num=0):
     x = Input(input_size)
     # 输入层
@@ -581,6 +632,7 @@ def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_
         model.load_weights(pretrained_weights)
 
     return model
+
 
 # ### GetNets
 def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
