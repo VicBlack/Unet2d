@@ -55,23 +55,23 @@ def img_norm(data):
 if __name__=='__main__':
     file_path = 'E:/DATA/DCMS/dcm/DET0000101_SA2_ph5.dcm'
     label_path = 'E:/DATA/DCMS/masks/DET0000101_SA2_ph5.png'
-    datagen = ImageDataGenerator(
-        rotation_range=10,
-        width_shift_range=0.05,
-        height_shift_range=0.05,
-        shear_range=0.05,
-        zoom_range=0.05,
-        fill_mode='nearest',
-        horizontal_flip=True,
-        vertical_flip=True,
-        dtype=np.float64)
+    # datagen = ImageDataGenerator(
+    #     rotation_range=10,
+    #     width_shift_range=0.05,
+    #     height_shift_range=0.05,
+    #     shear_range=0.05,
+    #     zoom_range=0.05,
+    #     fill_mode='nearest',
+    #     horizontal_flip=True,
+    #     vertical_flip=True,
+    #     dtype=np.float64)
     img = img_load(file_path, shape=(256, 256))
     lab = lab_load(label_path, shape=(256, 256))
     img = img.reshape(*img.shape, 1)
     lab = lab.reshape(*lab.shape, 1)
-    seed = random.randint(1, 100000)
-    img = datagen.random_transform(img, seed)
-    lab = datagen.random_transform(lab, seed)
+    # seed = random.randint(1, 100000)
+    # img = datagen.random_transform(img, seed)
+    # lab = datagen.random_transform(lab, seed)
     plt.figure()
     plt.subplot(1, 2, 1)
     plt.imshow(img[:, :, 0], 'gray')

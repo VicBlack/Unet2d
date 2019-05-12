@@ -4,7 +4,7 @@ from keras.layers import *
 from keras.optimizers import *
 from keras import backend as K
 from keras.utils import multi_gpu_model
-
+from GroupNormalization import GroupNormalization
 K.set_image_data_format('channels_last')
 
 
@@ -39,6 +39,7 @@ def dice_coefficient_loss(y_true, y_pred):
 def bce_dice_loss(y_true, y_pred):
     return 0.5 * keras.losses.binary_crossentropy(y_true, y_pred) - dice_coefficient(y_true, y_pred)
 
+# ### GN
 
 # ### Network Architecture
 def downsampling_block_2d(input_tensor, filters, kernel_size=(3, 3), strides=(1, 1), padding='same', batch_normalization=False, activation=None, dropout=None):
@@ -518,16 +519,16 @@ def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_f
     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
     conv4 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool3)
     conv4 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv4)
-    drop4 = Dropout(0.5)(conv4)
-    pool4 = MaxPooling2D(pool_size=(2, 2))(drop4)
+    # drop4 = Dropout(0.5)(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
 
     conv5 = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool4)
     conv5 = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv5)
-    drop5 = Dropout(0.5)(conv5)
+    # drop5 = Dropout(0.5)(conv5)
 
     up6 = Conv2D(512, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
-        UpSampling2D(size=(2, 2))(drop5))
-    merge6 = concatenate([drop4, up6], axis=3)
+        UpSampling2D(size=(2, 2))(conv5))
+    merge6 = concatenate([conv4, up6], axis=3)
     conv6 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge6)
     conv6 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv6)
 
