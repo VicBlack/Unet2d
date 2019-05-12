@@ -711,6 +711,8 @@ def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
                     'multi_gpu_num': 0}
     if model_type == 'unet_2d':
         return unet_2d(**net_conf)
+    if model_type == 'unet_deconv_2d':
+        return unet_deconv_2d(**net_conf)
     if model_type == 'unet_bn_upsampling_2d':
         return unet_bn_upsampling_2d(**net_conf)
     if model_type == 'unet_bn_deconv_2d':
