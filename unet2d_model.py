@@ -12,9 +12,9 @@ K.set_image_data_format('channels_last')
 def IoU(y_true, y_pred, eps=1e-6):
     if np.max(y_true) == 0.0:
         return IoU(1-y_true, 1-y_pred) ## empty image; calc IoU of zeros
-    intersection = K.sum(y_true * y_pred, axis=[1,2,3])
-    union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3]) - intersection
-    return K.mean( (intersection + eps) / (union + eps), axis=0)
+    intersection = K.sum(y_true * y_pred, axis=[1, 2, 3])
+    union = K.sum(y_true, axis=[1, 2, 3]) + K.sum(y_pred, axis=[1, 2, 3]) - intersection
+    return K.mean((intersection + eps) / (union + eps), axis=0)
 
 def mean_iou(y_true, y_pred):
     prec = []
@@ -27,11 +27,32 @@ def mean_iou(y_true, y_pred):
         prec.append(score)
     return K.mean(K.stack(prec), axis=0)
 
-def dice_coefficient(y_true, y_pred, smooth=1.):
+def Jaccard(y_true, y_pred, eps=1e-6):
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
-    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    union = K.sum(y_true_f) + K.sum(y_pred_f) - intersection
+    return (intersection + eps) / (union + eps)
+
+def Sensitivity(y_true, y_pred, eps=1e-6):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (intersection + eps) / (K.sum(y_true_f) + eps)
+
+def Specificity(y_true, y_pred, eps=1e-6):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = y_true_f * y_pred_f
+    fp = K.sum(y_pred_f - intersection)
+    tn = K.sum((1 - y_pred_f) * (1 - y_true_f))
+    return (tn + eps) / (fp + tn + eps)
+
+def dice_coefficient(y_true, y_pred, eps=1e-6):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + eps) / (K.sum(y_true_f) + K.sum(y_pred_f) + eps)
 
 def dice_coefficient_loss(y_true, y_pred):
     return -dice_coefficient(y_true, y_pred)
@@ -173,7 +194,7 @@ def unet_bn_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 256,
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -220,7 +241,7 @@ def unet_bn_block_full_upsampling_dp_2d(pretrained_weights=None, input_size=(256
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -271,7 +292,7 @@ def unet_bn_full_upsampling_dp3_2d(pretrained_weights=None, input_size=(256, 256
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -320,7 +341,7 @@ def unet_bn_full_deconv_dp_2d(pretrained_weights=None, input_size=(256, 256, 1),
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -369,7 +390,7 @@ def unet_bn_deconv_upsampling_dp_2d(pretrained_weights=None, input_size=(256, 25
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -418,7 +439,7 @@ def unet_bn_upsampling_deconv_dp_2d(pretrained_weights=None, input_size=(256, 25
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -458,7 +479,7 @@ def unet_bn_upsampling_2d(pretrained_weights=None, input_size=(256, 256, 1), dep
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -497,7 +518,7 @@ def unet_bn_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -558,7 +579,7 @@ def unet_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_base_f
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -619,7 +640,7 @@ def unet_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
@@ -686,7 +707,7 @@ def unet_dense_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4, n_
 
     model.compile(optimizer=optimizer,
                   loss=loss_function,
-                  metrics=['accuracy', 'binary_crossentropy', IoU, dice_coefficient])
+                  metrics=['accuracy', 'binary_crossentropy', dice_coefficient, Jaccard, Sensitivity, Specificity])
 
     model.summary()
 
