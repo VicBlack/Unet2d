@@ -14,15 +14,15 @@ epochs = 3
 chosen_file_percent = 0.001
 predict_percent = 0.1
 params = {'dim': (256, 256),
-          'batch_size': 4,
+          'batch_size': 2,
           'n_channels': 1}
 
 net_conf = {'pretrained_weights': None,
             'input_size': (256, 256, 1),
             'depth': 2,
-            'n_base_filters': 16,
+            'n_base_filters': 32,
             'optimizer': SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True),
-            'activation': PReLU,
+            'activation': ReLU,
             'batch_normalization': True,
             'loss_function': dice_coefficient_loss,
             'dropout': 0.3,
@@ -52,7 +52,7 @@ datagen = ImageDataGenerator(
 # 'unet_bn_upsampling_deconv_dp_2d'
 # 'unet_dense_2d'
 # 'unet_bn_block_full_upsampling_dp_2d'
-model_type = 'unet_bn_upsampling_2d'
+model_type = 'unet_gn_upsampling_2d'
 
 
 def GetConfigure():
