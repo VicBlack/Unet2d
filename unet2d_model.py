@@ -60,7 +60,7 @@ def dice_coefficient_loss(y_true, y_pred):
 def bce_dice_loss(y_true, y_pred):
     return 0.5 * keras.losses.binary_crossentropy(y_true, y_pred) - dice_coefficient(y_true, y_pred)
 
-# ### GN
+
 
 # ### Network Architecture
 def downsampling_block_2d(input_tensor, filters, kernel_size=(3, 3), strides=(1, 1), padding='same', batch_normalization=False, activation=None, dropout=None):
@@ -809,20 +809,20 @@ def unet_gn_deconv_2d(pretrained_weights=None, input_size=(256, 256, 1), depth=4
     inputs = x
     skiptensors = []  # 用于存放下采样中，每个深度后的tensor，以供之后级联使用
     for i in range(depth):
-        x, x0 = downsampling_block_2d(x, n_base_filters, batch_normalization=batch_normalization, activation=activation)
+        x, x0 = downsampling_gn_block_2d(x, n_base_filters, group_normalization=batch_normalization, activation=activation)
         skiptensors.append(x0)
         n_base_filters *= 2
     # 最底层两次卷积操作
     x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
-    x = BatchNormalization()(x) if batch_normalization else x
+    x = GroupNormalization()(x) if batch_normalization else x
     x = activation()(x) if activation else Activation('relu')(x)
     x = Conv2D(filters=n_base_filters, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
-    x = BatchNormalization()(x) if batch_normalization else x
+    x = GroupNormalization()(x) if batch_normalization else x
     x = activation()(x) if activation else Activation('relu')(x)
 
     for i in reversed(range(depth)):  # 下采样过程中，深度从深到浅
         n_base_filters //= 2  # 每个深度往上。特征减少一倍
-        x = deconvsampling_block_2d(x, skiptensors[i], n_base_filters, batch_normalization=batch_normalization, activation=activation)
+        x = deconvsampling_gn_block_2d(x, skiptensors[i], n_base_filters, group_normalization=batch_normalization, activation=activation)
 
     # 输出层
     outputs = Conv2D(filters=1, kernel_size=(1, 1), strides=(1, 1), padding='same', activation='sigmoid')(x)
@@ -877,12 +877,17 @@ def GetNet(model_type='unet_bn_upsampling_2d', net_conf=None):
         return unet_bn_block_full_upsampling_dp_2d(**net_conf)
     if model_type == 'unet_gn_upsampling_2d':
         return unet_gn_upsampling_2d(**net_conf)
+    if model_type == 'unet_gn_deconv_2d':
+        return unet_gn_deconv_2d(**net_conf)
 
 
 if __name__=='__main__':
     # model = GetNet('unet_2d')
+    # model = GetNet('unet_deconv_2d')
     # model = GetNet('unet_bn_upsampling_2d')
     # model = GetNet('unet_bn_deconv_2d')
+    # model = GetNet('unet_gn_upsampling_2d')
+    # model = GetNet('unet_gn_deconv_2d')
     # model = GetNet('unet_bn_full_upsampling_dp_2d')
     # model = GetNet('unet_bn_full_deconv_dp_2d')
     # model = GetNet('unet_bn_deconv_upsampling_dp_2d')
