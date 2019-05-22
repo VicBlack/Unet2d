@@ -6,7 +6,7 @@ from data_generator import *
 from unet2d_model import *
 from utils import *
 from configure import GetConfigure
-from keras.callbacks import EarlyStopping, ModelCheckpoint,TensorBoard
+from keras.callbacks import EarlyStopping, ModelCheckpoint,TensorBoard, CSVLogger
 from keras.optimizers import Adam
 from keras.layers import LeakyReLU
 from keras.utils import plot_model
@@ -50,10 +50,10 @@ def main():
                                             percent=predict_percent, save_path=test_result_path)
 
     model = GetNet(model_type, net_conf)
-    early_stoping = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, verbose=0, mode='auto')
+    early_stoping = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, verbose=0, mode='auto')
     model_checkpoint = ModelCheckpoint(
         filepath=os.path.join(weight_path, model_type + '-{epoch:02d}-{val_loss:.5f}.hdf5'),
-        monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False,
+        monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=True,
         mode='auto', period=1)
     tensorboard = TensorBoard(log_dir='logs/{}'.format(model_name))
 
@@ -65,24 +65,30 @@ def main():
     # ## training on train_dataset and validate_dataset
     print('>> Start Training')
     results = model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=epochs,
-                                  callbacks=[model_checkpoint, early_stoping, tensorboard])
-    print('Validation_Accuracy: ', np.mean(results.history['val_acc']))
+                                  verbose=2, callbacks=[model_checkpoint, early_stoping, tensorboard])
+    history = results.history
+    print('Validation_Accuracy: ', np.mean(history['val_acc']))
+    with open(os.path.join(conf_path, "history.json"), "w", encoding='utf-8') as f:
+        json.dump(history, f, indent=4)
     # ## predict on test_dataset
     print('>> Start Predicting')
-    p_test = model.predict_generator(predicting_generator, steps=int(np.ceil(len(partition['test']) * predict_percent)), verbose=1)
+    p_test = model.predict_generator(predicting_generator, steps=int(np.ceil(len(partition['test']) * predict_percent)), verbose=0)
     saveResult(test_result_path, p_test)
 
     # ## evaluate on test_dataset
     print('>> Start Evaluating')
-    eva = model.evaluate_generator(test_generator, verbose=1)
+    eva = model.evaluate_generator(test_generator, verbose=0)
     metricsnames = model.metrics_names
+    eva_result = {}
     for i in range(len(metricsnames)):
-        print(">> Testing dataset " + metricsnames[i] + " = {:.8f}".format(eva[i]))
+        eva_result[metricsnames[i]] = eva[i]
+        print(">> Testing dataset " + metricsnames[i] + " = {:f}".format(eva[i]))
     print('>> Run Model Completed !')
-
+    with open(os.path.join(conf_path, "evaluate_result.json"), "w", encoding='utf-8') as f:
+        json.dump(eva_result, f, indent=4)
     # ## save figures
-    plothistory(results, figure_path, metricsnames)
-    plot_acc_loss(results, figure_path)
+    plothistory(history, figure_path)
+    plot_acc_loss(history, figure_path)
 
 
 if __name__ == '__main__':

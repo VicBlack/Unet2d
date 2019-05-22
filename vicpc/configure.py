@@ -25,21 +25,22 @@ net_conf = {'pretrained_weights': None,
             'activation': ReLU,
             'batch_normalization': True,
             'loss_function': dice_coefficient_loss,
-            'dropout': 0.3,
+            'dropout': None,
             'multi_gpu_num': 0}
 
 cudas = "0"
 
-datagen = ImageDataGenerator(
-    rotation_range=10,
-    width_shift_range=0.05,
-    height_shift_range=0.05,
-    shear_range=0.05,
-    zoom_range=0.05,
-    fill_mode='nearest',
-    horizontal_flip=True,
-    vertical_flip=True,
-    dtype=np.float64)
+datagen = None
+# datagen = ImageDataGenerator(
+#     rotation_range=10,
+#     width_shift_range=0.05,
+#     height_shift_range=0.05,
+#     shear_range=0.05,
+#     zoom_range=0.05,
+#     fill_mode='nearest',
+#     horizontal_flip=True,
+#     vertical_flip=True,
+#     dtype=np.float64)
 
 # ## configure net
 # ## available net below:
